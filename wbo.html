@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PrimeRec — Boxing Records</title>
+
+<style>
+
+
+:root{
+  --bg:#0b0c10;
+  --panel:#121418;
+  --panel2:#171a20;
+  --border:#242833;
+  --text:#e6e6e6;
+  --muted:#8a8f98;
+  --accent:#d61f2c;
+  --green:#25c06d;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  background:#0f1116;
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:0.5px;
+}
+.logo span{color:var(--accent)}
+
+/* LAYOUT */
+.container{
+  max-width:1100px;
+  margin:20px auto;
+  padding:0 16px;
+}
+
+/* TABLE STYLE (BoxRec feel) */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--panel);
+  border:1px solid var(--border);
+}
+.table th{
+  text-align:left;
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:10px;
+  border-bottom:1px solid var(--border);
+}
+.table td{
+  padding:10px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.table tr:hover{
+  background:var(--panel2);
+}
+
+/* FIGHTER CELL */
+.fighter{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.fighter img{
+  width:200px;
+  height:200px;
+  border-radius:6px;
+  object-fit:cover;
+  border:1px solid #2a2f3a;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03);
+}
+/* RANK BADGE */
+.rank{
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:4px;
+  background:#222;
+  color:#ccc;
+}
+.champ{background:var(--accent);color:#fff}
+
+/* STATS BAR */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:15px;
+}
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:12px;
+}
+.stat h3{font-size:18px}
+.stat p{font-size:11px;color:var(--muted)}
+
+/* BUTTONS */
+button{
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:8px 10px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+/* FORM */
+input,select{
+  width:100%;
+  padding:8px;
+  background:#0f1116;
+  border:1px solid var(--border);
+  color:white;
+  font-size:13px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+/* SMALL */
+.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Prime<span>Rec</span>WBO Division</div>
+</header>
+
+<div class="container">
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><h3 id="totalF">0</h3><p>Fighters</p></div>
+  <div class="stat"><h3 id="totalFights">0</h3><p>Total Fights</p></div>
+  <div class="stat"><h3 id="champ">—</h3><p>Champion</p></div>
+  <div class="stat"><h3 id="n1">—</h3><p>Top Contender</p></div>
+</div>
+
+<!-- TABLE -->
+<table class="table">
+<thead>
+<tr>
+  <th>Fighter</th>
+  <th>Rank</th>
+  <th>Record</th>
+  <th>KO</th>
+  <th>NC</th>
+  <th>Last Opponent</th>
+</tr>
+</thead>
+<tbody id="rankings"></tbody>
+</table>
+
+<br/>
+
+
+
+</div>
+
+<script>
+
+let fighters = [
+  
+];
+
+let id = 4;
+
+/* ADD FIGHTER */
+function addFighter(){
+  const name = document.getElementById("name").value;
+  const img = document.getElementById("img").value;
+
+  if(!name) return alert("Enter name");
+
+  fighters.push({
+    id:id++,
+    name,
+    img,
+    rank:document.getElementById("rank").value,
+    w:0,l:0,d:0,ko:0,nc:0
+  });
+
+  render();
+}
+
+/* RENDER */
+function render(){
+
+  document.getElementById("totalF").innerText = fighters.length;
+
+  let totalFights = fighters.reduce((a,b)=>a+(b.w+b.l+b.d),0);
+  document.getElementById("totalFights").innerText = totalFights;
+
+  let champ = fighters.find(f=>f.rank==="Champion");
+  document.getElementById("champ").innerText = champ?champ.name:"—";
+
+  let n1 = fighters.find(f=>f.rank==="N1C");
+  document.getElementById("n1").innerText = n1?n1.name:"—";
+
+  document.getElementById("rankings").innerHTML =
+  fighters.map(f=>`
+    <tr>
+      <td>
+        <div class="fighter">
+          ${f.img?`<img src="${f.img}">`:``}
+          <b>${f.name}</b>
+        </div>
+      </td>
+
+      <td>
+        <span class="rank ${f.rank==="Champion"?"champ":""}">
+          ${f.rank}
+        </span>
+      </td>
+
+      <td>${f.w}-${f.l}-${f.d}</td>
+      <td>${f.ko}</td>
+      <td>${f.nc}</td>
+      <td>${f.lf}</td>
+    
+    </tr>
+  `).join("");
+}
+
+render();
+
+</script>
+
+</body>
+</html>
